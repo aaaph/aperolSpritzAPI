@@ -16,7 +16,7 @@ app
   .use(router.allowedMethods());
 
 app.on("error", async (err, ctx) => {
-  ctx.body = err;
+  console.log(err, ctx);
   //write to log file need
 });
 const port = process.env.PORT || 3000;
@@ -24,3 +24,5 @@ db.sequelize.sync().then(() => {
   app.listen(port);
 });
 console.info(`listening on port ${port}`);
+
+module.exports = app;
