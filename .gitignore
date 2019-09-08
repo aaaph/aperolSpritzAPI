@@ -1,0 +1,12 @@
+#npm
+node_modules
+.npm
+
+#logs files
+logs
+*.log
+npm-debug.log*
+
+#hide config file
+
+.env

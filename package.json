@@ -1,0 +1,38 @@
+{
+  "name": "aperol-spritz-api",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "nd": "nodemon app.js",
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/IvanAphanasyev/aperol-spritz-api.git"
+  },
+  "keywords": [
+    "node.js",
+    "koa",
+    "postgresql",
+    "sequelize"
+  ],
+  "author": "Ivan Aphanasyev <nekaktotak2@gmail.com>",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/IvanAphanasyev/aperol-spritz-api#readme",
+  "dependencies": {
+    "dotenv": "^8.1.0",
+    "koa": "^2.8.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-logger": "^3.2.1",
+    "koa-qs": "^2.0.0",
+    "koa-router": "^7.4.0",
+    "pg": "^7.12.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.18.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.2"
+  }
+}
