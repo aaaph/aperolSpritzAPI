@@ -37,7 +37,7 @@ router.get("/:id", async (ctx, next) => {
 });
 
 router.post("/", async (ctx, next) => {
-  const obj = {
+  let obj = {
     number: crypto
       .randomBytes(4)
       .toString("hex")
@@ -48,6 +48,14 @@ router.post("/", async (ctx, next) => {
     brand: ctx.request.body.brand,
     PIN: ctx.request.body.PIN
   };
+  let date = await new Date();
+  await date.setDate(date.getDate() + parseInt(ctx.request.body.expiry));
+  date = await new Date(
+    `${date.getFullYear()}-${date.getMonth()}-${date.getDate() + 1}`
+  );
+  obj.expiry = await date;
+  console.log(obj);
+
   const voucher = await models.voucher.create(obj);
   ctx.body = { status: "success", voucher: voucher };
   await next();
