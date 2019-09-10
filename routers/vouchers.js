@@ -3,18 +3,36 @@ const router = new Router();
 
 const models = require("../models");
 const crypto = require("crypto");
+const uuidValidate = require("uuid-validate");
 
 router.get("/", async (ctx, next) => {
-  const vouchers = await models.voucher.findAll();
-  ctx.body = vouchers;
-
+  try {
+    const vouchers = await models.voucher.findAll();
+    ctx.body = vouchers;
+  } catch (err) {
+    err.status = err.statusCode || err.status || 500;
+    ctx.body = { err: err.status, message: err.message };
+    ctx.app.emit("error", err, ctx);
+  }
   await next();
 });
-
+router.all("/:id", async (ctx, next) => {
+  if (await !uuidValidate(ctx.params.id)) {
+    ctx.throw(400, "incorrect uuid");
+  }
+  ctx.voucher = await models.voucher.findByPk(ctx.params.id);
+  if (!ctx.voucher) {
+    ctx.throw(404, "not found");
+  }
+  await next();
+});
 router.get("/:id", async (ctx, next) => {
-  const voucher = await models.voucher.findByPk(ctx.params.id);
-  ctx.body = { status: "success", voucher: voucher };
-
+  try {
+    ctx.body = { status: "success", voucher: ctx.voucher };
+  } catch (err) {
+    err.status = err.statusCode || err.status || err.errStatus || 500;
+    ctx.app.emit("error", err, ctx);
+  }
   await next();
 });
 
@@ -44,16 +62,24 @@ router.patch("/:id", async (ctx, next) => {
     PIN: ctx.request.body.PIN,
     status: ctx.request.body.status
   };
-  const voucher = await models.voucher.findByPk(ctx.params.id);
-  const updateVoucher = await voucher.update(obj);
-  ctx.body = { status: "updated", voucher: updateVoucher };
+  try {
+    const updatedVoucher = await ctx.voucher.update(obj);
+    ctx.body = { status: "updated", voucher: updatedVoucher };
+  } catch (err) {
+    err.status = err.statusCode || err.status || err.errStatus || 500;
+    ctx.app.emit("error", err, ctx);
+  }
   await next();
 });
 
 router.delete("/:id", async (ctx, next) => {
-  const voucher = await models.voucher.findByPk(ctx.params.id);
-  const del = await voucher.destroy();
-  ctx.body = { status: "succes", result: del };
+  try {
+    await ctx.voucher.destroy();
+    ctx.body = { status: "deleted" };
+  } catch (err) {
+    err.status = err.statusCode || err.status || err.errStatus || 500;
+    ctx.app.emit("error", err, ctx);
+  }
   await next();
 });
 
