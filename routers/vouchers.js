@@ -90,7 +90,7 @@ router.delete("/:id", async (ctx, next) => {
   }
   await next();
 });
-router.delete("/:id/deleteAll", async (ctx, next) => {
+router.delete("/deleteAll", async (ctx, next) => {
   try {
     await models.voucher.destroy({
       where: {},
