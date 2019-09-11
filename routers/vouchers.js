@@ -90,7 +90,7 @@ router.delete("/:id", async (ctx, next) => {
   }
   await next();
 });
-router.delete("/deleteAll", async (ctx, next) => {
+router.delete("/delete/all", async (ctx, next) => {
   try {
     await models.voucher.destroy({
       where: {},
@@ -100,5 +100,6 @@ router.delete("/deleteAll", async (ctx, next) => {
     err.status = err.statusCode || err.status || err.errStatus || 500;
     ctx.app.emit("error", err, ctx);
   }
+  ctx.redirect("/api/vouchers");
 });
 module.exports = router;
