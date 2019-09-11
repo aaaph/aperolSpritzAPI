@@ -90,5 +90,15 @@ router.delete("/:id", async (ctx, next) => {
   }
   await next();
 });
-
+router.delete("/:id/deleteAll", async (ctx, next) => {
+  try {
+    await models.voucher.destroy({
+      where: {},
+      truncate: true
+    });
+  } catch (err) {
+    err.status = err.statusCode || err.status || err.errStatus || 500;
+    ctx.app.emit("error", err, ctx);
+  }
+});
 module.exports = router;
