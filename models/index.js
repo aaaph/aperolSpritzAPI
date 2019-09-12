@@ -4,6 +4,7 @@ const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 const config = require(__dirname + "/../config/config.json")[env];
+const logger = require("../config/loggerConfig");
 const db = {};
 let sequelize;
 
@@ -14,7 +15,11 @@ if (config.use_env_variable) {
     process.env.database_dev,
     process.env.username_dev,
     process.env.password_dev,
-    config
+    {
+      host: "127.0.0.1",
+      dialect: "postgres",
+      logging: logger.sequelizeLogger
+    }
   );
 }
 

@@ -56,21 +56,22 @@ router.post("/", async (ctx, next) => {
   obj.expiry = await date;
 
   const voucher = await models.voucher.create(obj);
+  ctx.status = 201;
   ctx.body = { status: "success", voucher: voucher };
   await next();
 });
 
 router.patch("/:id", async (ctx, next) => {
   const obj = {
-    offer: ctx.request.body.offer,
-    venue: ctx.request.body.venue,
-    expiry: new Date(),
-    brand: ctx.request.body.brand,
+    offer: ctx.request.body.offer.replace(/\s+/g, " ").trim(),
+    venue: ctx.request.body.venue.replace(/\s+/g, " ").trim(),
+    brand: ctx.request.body.brand.replace(/\s+/g, " ").trim(),
     PIN: ctx.request.body.PIN,
     status: ctx.request.body.status
   };
   try {
     const updatedVoucher = await ctx.voucher.update(obj);
+
     ctx.body = { status: "updated", voucher: updatedVoucher };
   } catch (err) {
     err.status = err.statusCode || err.status || err.errStatus || 500;

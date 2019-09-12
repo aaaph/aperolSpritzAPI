@@ -22,16 +22,21 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/IvanAphanasyev/aperol-spritz-api#readme",
   "dependencies": {
+    "app-root-path": "^2.2.1",
     "dotenv": "^8.1.0",
+    "express-winston": "^3.3.0",
     "koa": "^2.8.1",
     "koa-bodyparser": "^4.2.1",
     "koa-logger": "^3.2.1",
     "koa-qs": "^2.0.0",
     "koa-router": "^7.4.0",
+    "koa2-winston": "^3.1.1",
     "pg": "^7.12.1",
     "pg-hstore": "^2.3.3",
+    "rotating-file-stream": "^1.4.3",
     "sequelize": "^5.18.4",
-    "uuid-validate": "0.0.3"
+    "uuid-validate": "0.0.3",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "jest": "^24.9.0",
