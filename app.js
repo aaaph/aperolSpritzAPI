@@ -16,10 +16,22 @@ app
   .use(router.allowedMethods());
 
 app.on("error", (err, ctx) => {
-  console.error(err.stack);
+  console.log(err);
   if (!ctx || ctx.headerSent || !ctx.writable) return;
-  ctx.writable = false; //  interrupt `ctx.onerror`
-  ctx.status = err.status || 500;
+  if (err.name == "SequelizeValidationError") {
+    //ctx.writable = false;
+    let message = "";
+    err.errors.forEach(element => {
+      message += `${element.message}\n`;
+    });
+    ctx.status = 400;
+    ctx.res.end(message);
+  } else {
+    ctx.writable = false; //  interrupt `ctx.onerror`
+    ctx.status = err.status || 500;
+    ctx.res.end();
+    ctx.body = err.message;
+  }
   //ctx.res.end(err.message);
   //write to log file need=
 });

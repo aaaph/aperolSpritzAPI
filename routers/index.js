@@ -4,5 +4,7 @@ const router = new Router();
 const vouchers = require("./vouchers");
 
 router.use("/api/vouchers", vouchers.routes());
-
+router.all("/", (ctx, next) => {
+  ctx.redirect("/api/vouchers");
+});
 module.exports = router;

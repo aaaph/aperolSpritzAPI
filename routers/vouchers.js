@@ -42,10 +42,10 @@ router.post("/", async (ctx, next) => {
       .randomBytes(4)
       .toString("hex")
       .toUpperCase(),
-    offer: ctx.request.body.offer,
-    venue: ctx.request.body.venue,
+    offer: ctx.request.body.offer.replace(/\s+/g, " ").trim(),
+    venue: ctx.request.body.venue.replace(/\s+/g, " ").trim(),
     expiry: new Date(),
-    brand: ctx.request.body.brand,
+    brand: ctx.request.body.brand.replace(/\s+/g, " ").trim(),
     PIN: ctx.request.body.PIN
   };
   let date = await new Date();
@@ -54,7 +54,6 @@ router.post("/", async (ctx, next) => {
     `${date.getFullYear()}-${date.getMonth()}-${date.getDate() + 1}`
   );
   obj.expiry = await date;
-  console.log(obj);
 
   const voucher = await models.voucher.create(obj);
   ctx.body = { status: "success", voucher: voucher };

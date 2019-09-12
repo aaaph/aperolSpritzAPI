@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isUppercase: true,
-        notEmpty: true,
-        len: [8, 8]
+        isUppercase: { args: true, msg: "number upper case only" },
+        notEmpty: { args: true, msg: "number can not be empty" },
+        len: { args: [8, 8], msg: "number has fix size in 8 symbols" }
       }
     },
     //Offer: What is being provided by the User?
@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: { args: true, msg: "offer can not be empty" }
       }
     },
     //Venue: Which venue(s) are part of the offer?
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: { args: true, msg: "venue can not be empty" }
       }
     },
     //Expiry: When does the offer expire?
@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
       validate: {
-        isDate: true
+        isDate: { args: true, msg: "invalid input expiry" }
       }
     },
     //Brand: Which brand(s) (use Tags)
@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: { args: true, msg: "brand can not be empty" }
       }
     },
     //PIN: The PIN a Bartender will use to redeem the Voucher
@@ -52,8 +52,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isNumeric: true,
-        len: [6, 6]
+        isNumeric: {
+          args: true,
+          msg: "Pin must be digits only"
+        },
+        len: { args: [6, 6], msg: "Pin must have 6 digits only" }
       }
     },
     // status Issued, Redeemed, Cancelled
