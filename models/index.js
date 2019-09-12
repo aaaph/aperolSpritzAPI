@@ -9,7 +9,9 @@ const db = {};
 let sequelize;
 
 if (config.use_env_variable) {
-  sequelize = new Sequelize(config.host);
+  sequelize = new Sequelize(config.host, {
+    logging: logger.sequelizeLogger
+  });
 } else {
   sequelize = new Sequelize(
     process.env.database_dev,
