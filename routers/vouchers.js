@@ -55,30 +55,44 @@ router.post("/", async (ctx, next) => {
       .randomBytes(4)
       .toString("hex")
       .toUpperCase(),
-    offer: ctx.request.body.offer.replace(/\s+/g, " ").trim(),
-    venue: ctx.request.body.venue.replace(/\s+/g, " ").trim(),
-    expiry: new Date(),
-    brand: ctx.request.body.brand.replace(/\s+/g, " ").trim(),
+    offer: ctx.request.body.offer
+      ? ctx.request.body.offer.replace(/\s+/g, " ").trim()
+      : await ctx.throw(400, "Property 'Offer' is requered"),
+    venue: ctx.request.body.venue
+      ? ctx.request.body.venue.replace(/\s+/g, " ").trim()
+      : await ctx.throw(400, "Property 'venue' is requered"),
+    expiry: ctx.request.body.expiry ? parseInt(ctx.request.body.expiry) : 0,
+    brand: ctx.request.body.brand
+      ? ctx.request.body.brand.replace(/\s+/g, " ").trim()
+      : await ctx.throw(400, "Propery 'Brand' is requered"),
     PIN: ctx.request.body.PIN
+      ? ctx.request.body.PIN
+      : await ctx.throw(400, " Property 'PIN' requered")
   };
   let date = await new Date();
-  await date.setDate(date.getDate() + parseInt(ctx.request.body.expiry));
+  await date.setDate(date.getDate() + obj.expiry);
   date = await new Date(
     `${date.getFullYear()}-${date.getMonth()}-${date.getDate() + 1}`
-  );
+  ).setHours(new Date().getTimezoneOffset() / -60);
   obj.expiry = await date;
 
   const voucher = await models.voucher.create(obj);
   ctx.status = 201;
-  ctx.body = { status: "success", voucher: voucher };
+  ctx.body = { status: "created", voucher: voucher };
   await next();
 });
 
 router.patch("/:id", async (ctx, next) => {
   const obj = {
-    offer: ctx.request.body.offer.replace(/\s+/g, " ").trim(),
-    venue: ctx.request.body.venue.replace(/\s+/g, " ").trim(),
-    brand: ctx.request.body.brand.replace(/\s+/g, " ").trim(),
+    offer: ctx.request.body.offer
+      ? ctx.request.body.offer.replace(/\s+/g, " ").trim()
+      : ctx.request.body.offer,
+    venue: ctx.request.body.venue
+      ? ctx.request.body.venue.replace(/\s+/g, " ").trim()
+      : ctx.request.body.venue,
+    brand: ctx.request.body.brand
+      ? ctx.request.body.brand.replace(/\s+/g, " ").trim()
+      : ctx.request.body.brand,
     PIN: ctx.request.body.PIN,
     status: ctx.request.body.status
   };
@@ -87,9 +101,10 @@ router.patch("/:id", async (ctx, next) => {
     await date.setDate(date.getDate() + parseInt(ctx.request.body.expiry));
     date = await new Date(
       `${date.getFullYear()}-${date.getMonth()}-${date.getDate() + 1}`
-    );
+    ).setHours(new Date().getTimezoneOffset() / -60);
     obj.expiry = await date;
   }
+  console.log(obj);
   try {
     const updatedVoucher = await ctx.voucher.update(obj);
 
