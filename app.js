@@ -1,6 +1,6 @@
 const Koa = require("koa");
 const bodyParser = require("koa-bodyparser");
-const testlogger = require("./config/loggerConfig");
+const logger = require("./config/loggerConfig");
 const app = new Koa();
 require("dotenv").config();
 
@@ -8,8 +8,8 @@ const router = require("./routers");
 const db = require("./models");
 
 app
-  .use(testlogger.accessLoggerMiddleware)
-  .use(testlogger.devLogger)
+  .use(logger.accessLoggerMiddleware)
+  .use(logger.devLogger)
   .use(bodyParser())
   .use(router.routes())
   .use(router.allowedMethods());
@@ -28,10 +28,9 @@ app.on("error", (err, ctx) => {
   } else {
     ctx.writable = false; //  interrupt `ctx.onerror`
     ctx.status = err.status || 500;
-    ctx.res.end();
-    ctx.body = err.message;
+    ctx.res.end(err.message);
   }
-  testlogger.errorLogger.error({
+  logger.errorLogger.error({
     errorDate: new Date(),
     error: {
       context: ctx,
