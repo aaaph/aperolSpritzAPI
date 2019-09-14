@@ -29,7 +29,8 @@ router.get("/", async (ctx, next) => {
   }
   await next();
 });
-router.all("/:id", async (ctx, next) => {
+
+const findVoucher = async (ctx, next) => {
   if (await uuidValidate(ctx.params.id)) {
     ctx.voucher = await models.voucher.findByPk(ctx.params.id);
   } else {
@@ -43,8 +44,9 @@ router.all("/:id", async (ctx, next) => {
     ctx.throw(404, "not found");
   }
   await next();
-});
-router.get("/:id", async (ctx, next) => {
+};
+
+router.get("/:id", findVoucher, async (ctx, next) => {
   try {
     ctx.body = { status: "success", voucher: ctx.voucher };
   } catch (err) {
@@ -54,7 +56,7 @@ router.get("/:id", async (ctx, next) => {
   await next();
 });
 
-router.post("/", async (ctx, next) => {
+router.post("/create", async (ctx, next) => {
   let obj = {
     // target
     userId: ctx.request.body.userId,
@@ -93,7 +95,8 @@ router.post("/", async (ctx, next) => {
   await next();
 });
 
-router.patch("/:id", async (ctx, next) => {
+router.patch("/:id/update", findVoucher, async (ctx, next) => {
+  console.log(ctx.params.id);
   const obj = {
     offer: ctx.request.body.offer
       ? ctx.request.body.offer.replace(/\s+/g, " ").trim()
@@ -127,7 +130,7 @@ router.patch("/:id", async (ctx, next) => {
   await next();
 });
 
-router.delete("/:id", async (ctx, next) => {
+router.delete("/:id/delete", findVoucher, async (ctx, next) => {
   try {
     await ctx.voucher.destroy();
     ctx.body = { status: "deleted" };
@@ -137,6 +140,7 @@ router.delete("/:id", async (ctx, next) => {
   }
   await next();
 });
+
 router.delete("/delete/all", async (ctx, next) => {
   try {
     await models.voucher.destroy({
