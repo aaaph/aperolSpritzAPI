@@ -48,7 +48,7 @@ const findVoucher = async (ctx, next) => {
 
 router.get("/:id", findVoucher, async (ctx, next) => {
   try {
-    ctx.body = { status: "success", voucher: ctx.voucher };
+    ctx.body = ctx.voucher;
   } catch (err) {
     err.status = err.statusCode || err.status || err.errStatus || 500;
     ctx.app.emit("error", err, ctx);
@@ -91,7 +91,7 @@ router.post("/create", async (ctx, next) => {
   console.log(obj);
   const voucher = await models.voucher.create(obj);
   ctx.status = 201;
-  ctx.body = { status: "created", voucher: voucher };
+  ctx.body = voucher;
   await next();
 });
 
@@ -122,7 +122,7 @@ router.patch("/:id/update", findVoucher, async (ctx, next) => {
   try {
     const updatedVoucher = await ctx.voucher.update(obj);
 
-    ctx.body = { status: "updated", voucher: updatedVoucher };
+    ctx.body = updatedVoucher;
   } catch (err) {
     err.status = err.statusCode || err.status || err.errStatus || 500;
     ctx.app.emit("error", err, ctx);
