@@ -92,11 +92,23 @@ router.post("/create", async (ctx, next) => {
   const voucher = await models.voucher.create(obj);
   ctx.status = 201;
   ctx.body = voucher;
+  //history
+  const changeObj = {
+    status: "created",
+    voucherId: voucher.id,
+    date: new Date(),
+    before: null,
+    after: voucher,
+    description: "create a new voucher"
+  };
+  await models.change.create(changeObj);
+  //
   await next();
 });
 
 router.patch("/:id/update", findVoucher, async (ctx, next) => {
-  console.log(ctx.params.id);
+  const before = Object.assign({}, ctx.voucher.dataValues);
+  console.log(before);
   const obj = {
     offer: ctx.request.body.offer
       ? ctx.request.body.offer.replace(/\s+/g, " ").trim()
@@ -123,6 +135,17 @@ router.patch("/:id/update", findVoucher, async (ctx, next) => {
     const updatedVoucher = await ctx.voucher.update(obj);
 
     ctx.body = updatedVoucher;
+    const changeObj = {
+      status: "updated",
+      voucherId: updatedVoucher.id,
+      date: new Date(),
+      before: before,
+      after: updatedVoucher,
+      description: `update voucher with id ${updatedVoucher.id}`
+    };
+    console.log(before);
+    console.log(changeObj);
+    await models.change.create(changeObj);
   } catch (err) {
     err.status = err.statusCode || err.status || err.errStatus || 500;
     ctx.app.emit("error", err, ctx);
@@ -131,6 +154,7 @@ router.patch("/:id/update", findVoucher, async (ctx, next) => {
 });
 
 router.delete("/:id/delete", findVoucher, async (ctx, next) => {
+  const voucher = ctx.voucher.dataValues;
   try {
     await ctx.voucher.destroy();
     ctx.body = { status: "deleted" };
@@ -138,14 +162,32 @@ router.delete("/:id/delete", findVoucher, async (ctx, next) => {
     err.status = err.statusCode || err.status || err.errStatus || 500;
     ctx.app.emit("error", err, ctx);
   }
+  const changeObj = {
+    status: "deleted",
+    voucherId: voucher.id,
+    date: new Date(),
+    before: voucher,
+    after: null,
+    description: `delete voucher with id ${voucher.id}`
+  };
+  await models.change.create(changeObj);
   await next();
 });
 
 router.delete("/delete/all", async (ctx, next) => {
+  await models.voucher.findAll().map(item =>
+    models.change.create({
+      status: "deleted",
+      voucherId: item.id,
+      date: new Date(),
+      before: item,
+      after: null,
+      description: `delete voucher with id ${itemrs.id}`
+    })
+  );
   try {
     await models.voucher.destroy({
-      where: {},
-      truncate: true
+      where: {}
     });
   } catch (err) {
     err.status = err.statusCode || err.status || err.errStatus || 500;
