@@ -49,7 +49,8 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notEmpty: { args: true, msg: "nput string 'Offer' can not be empty" }
         },
-        defaultValue: "default text for offer"
+        defaultValue:
+          "Receive an Aperol Spritz for only 100k++ VND at Caravelle Hotel Saigon"
       },
       //Venue: Which venue(s) are part of the offer?
       venue: {
@@ -58,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notEmpty: { args: true, msg: "Input string 'Venue' can not be empty" }
         },
-        defaultValue: "default text for venue"
+        defaultValue: "Caravelle Hotel Saigon"
       },
       //Expiry: When does the offer expire?
       expiry: {
@@ -75,7 +76,7 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notEmpty: { args: true, msg: "Input string 'Brand' can not be empty" }
         },
-        defaultValue: "default text for brand"
+        defaultValue: "Aperol Spritz"
       },
       //PIN: The PIN a Bartender will use to redeem the Voucher
       PIN: {

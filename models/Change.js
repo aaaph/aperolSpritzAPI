@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         isIn: {
           args: [["created", "updated", "deleted"]],
           msg:
-            "status is enum, can be is only one next value: issued, redeemed, cancelled"
+            "status is enum, can be is only one next value: created, updated, deleted"
         }
       }
     },
@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     after: { type: DataTypes.JSONB, allowNull: true },
-    description: { type: DataTypes.STRING, allowNull: false }
+    description: { type: DataTypes.TEXT, allowNull: false }
   });
   return Change;
 };

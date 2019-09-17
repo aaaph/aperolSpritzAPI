@@ -5,6 +5,31 @@ const models = require("../models");
 const crypto = require("crypto");
 const uuidValidate = require("uuid-validate");
 
+router.get("/changes", async (ctx, next) => {
+  console.log(123);
+  try {
+    const changes = await models.change.findAll();
+    ctx.body = changes;
+    //await next();
+  } catch (err) {
+    err.status = err.statusCode || err.status || err.errStatus || 500;
+    ctx.app.emit("error", err, ctx);
+  }
+});
+
+router.get("/changes/:id", async (ctx, next) => {
+  //check for changeId
+  let changes = await models.change.findByPk(ctx.params.id);
+  if (!changes)
+    changes = await models.change.findAll({
+      where: { voucherId: ctx.params.id }
+    });
+  if (!changes) ctx.throw(404, "not found");
+
+  ctx.body = changes;
+  await next();
+});
+
 router.get("/", async (ctx, next) => {
   try {
     const vouchers = await models.voucher.findAll();
@@ -47,6 +72,7 @@ const findVoucher = async (ctx, next) => {
 };
 
 router.get("/:id", findVoucher, async (ctx, next) => {
+  console.log(000);
   try {
     ctx.body = ctx.voucher;
   } catch (err) {
@@ -92,23 +118,20 @@ router.post("/create", async (ctx, next) => {
   const voucher = await models.voucher.create(obj);
   ctx.status = 201;
   ctx.body = voucher;
-  //history
-  const changeObj = {
+  //write to history
+  await models.change.create({
     status: "created",
     voucherId: voucher.id,
     date: new Date(),
     before: null,
     after: voucher,
-    description: "create a new voucher"
-  };
-  await models.change.create(changeObj);
+    description: `create a new voucher with ${voucher.id}`
+  });
   //
   await next();
 });
 
 router.patch("/:id/update", findVoucher, async (ctx, next) => {
-  const before = Object.assign({}, ctx.voucher.dataValues);
-  console.log(before);
   const obj = {
     offer: ctx.request.body.offer
       ? ctx.request.body.offer.replace(/\s+/g, " ").trim()
@@ -132,20 +155,29 @@ router.patch("/:id/update", findVoucher, async (ctx, next) => {
     obj.expiry = await date;
   }
   try {
+    const before = Object.assign({}, ctx.voucher.dataValues);
     const updatedVoucher = await ctx.voucher.update(obj);
-
     ctx.body = updatedVoucher;
-    const changeObj = {
+    //console.log(updatedVoucher);
+    const history = {
       status: "updated",
       voucherId: updatedVoucher.id,
       date: new Date(),
       before: before,
       after: updatedVoucher,
-      description: `update voucher with id ${updatedVoucher.id}`
+      description: `update voucher with id ${updatedVoucher.id},\n`
     };
-    console.log(before);
-    console.log(changeObj);
-    await models.change.create(changeObj);
+    const after = updatedVoucher.dataValues;
+    for (const key in after) {
+      if (after.hasOwnProperty(key)) {
+        if (!(after[key] == before[key])) {
+          history.description += `${key} changed from ${before[key]} to ${after[key]},\n`;
+        }
+      }
+    }
+    history.description = history.description.slice(0, -3);
+
+    await models.change.create(history);
   } catch (err) {
     err.status = err.statusCode || err.status || err.errStatus || 500;
     ctx.app.emit("error", err, ctx);
@@ -182,7 +214,7 @@ router.delete("/delete/all", async (ctx, next) => {
       date: new Date(),
       before: item,
       after: null,
-      description: `delete voucher with id ${itemrs.id}`
+      description: `delete voucher with id ${item.id}`
     })
   );
   try {
@@ -195,4 +227,5 @@ router.delete("/delete/all", async (ctx, next) => {
   }
   ctx.redirect("/api/vouchers");
 });
+
 module.exports = router;
