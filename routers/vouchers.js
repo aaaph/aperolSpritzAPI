@@ -5,30 +5,7 @@ const models = require("../models");
 const crypto = require("crypto");
 const uuidValidate = require("uuid-validate");
 
-router.get("/changes", async (ctx, next) => {
-  console.log(123);
-  try {
-    const changes = await models.change.findAll();
-    ctx.body = changes;
-    //await next();
-  } catch (err) {
-    err.status = err.statusCode || err.status || err.errStatus || 500;
-    ctx.app.emit("error", err, ctx);
-  }
-});
-
-router.get("/changes/:id", async (ctx, next) => {
-  //check for changeId
-  let changes = await models.change.findByPk(ctx.params.id);
-  if (!changes)
-    changes = await models.change.findAll({
-      where: { voucherId: ctx.params.id }
-    });
-  if (!changes) ctx.throw(404, "not found");
-
-  ctx.body = changes;
-  await next();
-});
+router.use("/history", require("./history").routes());
 
 router.get("/", async (ctx, next) => {
   try {
@@ -80,6 +57,15 @@ router.get("/:id", findVoucher, async (ctx, next) => {
     ctx.app.emit("error", err, ctx);
   }
   await next();
+});
+
+router.get("/:id/history", findVoucher, async (ctx, next) => {
+  const id = ctx.voucher.id;
+  changes = await models.change.findAll({
+    where: { voucherId: id }
+  });
+  if (!changes) ctx.throw(404, "this voucher has not change history");
+  ctx.body = changes;
 });
 
 router.post("/create", async (ctx, next) => {
