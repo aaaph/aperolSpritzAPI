@@ -3,26 +3,16 @@ const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
-const config = require(__dirname + "/../config/config.json")[env];
+const config = require(__dirname + "/../config/config.js")[env];
 const logger = require("../config/loggerConfig");
+config.logging = logger.sequelizeLogger;
 const db = {};
 let sequelize;
-
+console.log(config);
 if (config.use_env_variable) {
-  sequelize = new Sequelize(config.host, {
-    logging: logger.sequelizeLogger
-  });
+  sequelize = new Sequelize(config);
 } else {
-  sequelize = new Sequelize(
-    process.env.database_dev,
-    process.env.username_dev,
-    process.env.password_dev,
-    {
-      host: "127.0.0.1",
-      dialect: "postgres",
-      logging: logger.sequelizeLogger
-    }
-  );
+  sequelize = new Sequelize(config);
 }
 
 fs.readdirSync(__dirname)

@@ -29,6 +29,27 @@ module.exports = (sequelize, DataTypes) => {
         },
         unique: true
       },
+      isPosted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        validate: {
+          notNull: {
+            args: true,
+            msg: "isPoted can not be null"
+          },
+          async checkInput(value, next) {
+            if (value > 1) {
+              let err = new Error();
+              err.message =
+                "input string can be only a next values: 'true', 'false', '0', '1'";
+              err.status = 400;
+              await next(err);
+            }
+            await next();
+          }
+        }
+      },
       //Voucher Number: Which is shown on the voucher (randomise but unique 8 characters uppercase/numbers)
       number: {
         type: DataTypes.STRING,

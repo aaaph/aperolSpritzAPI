@@ -67,7 +67,24 @@ router.get("/:id/history", findVoucher, async (ctx, next) => {
   if (!changes) ctx.throw(404, "this voucher has not change history");
   ctx.body = changes;
 });
-
+router.get("/:id/isPosted/:value", findVoucher, async (ctx, next) => {
+  const obj = {};
+  try {
+    obj.isPosted = JSON.parse(ctx.params.value);
+  } catch (err) {
+    ctx.throw(400, "value can be is only true or false");
+  }
+  console.log(obj);
+  try {
+    const updatedVoucher = await ctx.voucher.update(obj);
+    ctx.body = updatedVoucher;
+  } catch (err) {
+    err.status = err.statusCode || err.status || err.errStatus || 500;
+    ctx.app.emit("error", err, ctx);
+  }
+  //console.log(ctx.voucher);
+  console.log(ctx.params.value);
+});
 router.post("/create", async (ctx, next) => {
   let obj = {
     // target
