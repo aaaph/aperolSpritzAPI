@@ -9,8 +9,9 @@ config.logging = logger.sequelizeLogger;
 const db = {};
 let sequelize;
 console.log(config);
+console.log(process.env.host);
 if (config.use_env_variable) {
-  sequelize = new Sequelize(config);
+  sequelize = new Sequelize(config.host);
 } else {
   sequelize = new Sequelize(config);
 }

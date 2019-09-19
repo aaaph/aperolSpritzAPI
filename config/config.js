@@ -1,4 +1,4 @@
-require("dotenv").config();
+//require("dotenv").config();
 module.exports = {
   development: {
     username: process.env.username_dev,
@@ -16,7 +16,7 @@ module.exports = {
   },
   production: {
     host:
-      "postgres://ztxkcxobsilpph:47e29c59596377925e3faa07895d4027c9f18d00897927271849a332abd1f0dd@ec2-174-129-27-3.compute-1.amazonaws.com:5432/d5fciusav0kv6u",
+      "postgres://diykwiovmmkhgx:c73a93a9224e305671dbbfa47ca88aa042ff9bf26dddd46d149330f5fed7dc34@ec2-54-221-243-211.compute-1.amazonaws.com:5432/d27qbf3m55e9eb",
     dialect: "postgres",
     use_env_variable: true
   }
